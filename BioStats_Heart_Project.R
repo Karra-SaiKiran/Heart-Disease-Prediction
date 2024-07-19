@@ -288,3 +288,28 @@ table(test$Class,pred_model)
 missing_classer=mean(pred_model != test$Class)
 missing_classer
 print(paste('Accuracy =', 1 - missing_classer))
+
+#######ROC-AUC  curve########
+
+install.packages("ROCR")
+library(ROCR)
+
+ROCPred <- prediction(pred_model, test$Class)
+ROCPer <- performance(ROCPred, measure = "tpr",
+                      x.measure = "fpr")
+
+auc <- performance(ROCPred, measure = "auc")
+auc <- auc@y.values[[1]]
+auc
+
+plot(ROCPer)
+plot(ROCPer, colorize = TRUE,
+     print.cutoffs.at = seq(0.1, by = 0.1),
+     main = "ROC CURVE")
+abline(a = 0, b = 1)
+
+auc <- round(auc, 4)
+legend(.6, .4, auc, title = "AUC", cex = 1)
+
+######AIC OF THE MODEL########
+AIC(logistic_model)
